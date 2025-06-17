@@ -9,7 +9,7 @@
     .center { text-align:center; }
     .flex-col { display:flex; flex-direction:column; align-items:center; }
     .flex-row { display:flex; flex-direction:row; justify-content:center; gap:16px; }
-    table { border-collapse:collapse; margin:24px 0; background:#fff; color:#222; font-size:1.15em; min-width:520px; box-shadow:0 2px 16px #0004; }
+    table { border-collapse:collapse; margin:24px 0; background:#fff; color:#222; font-size:1.15em; min-width:520px; box-shadow:0 2px 16px #0004; margin-left:auto; margin-right:auto; }
     th,td { border:1.5px solid #aaa; padding:10px 18px; text-align:center; }
     th { background:#222; color:#ffd700; font-size:1.08em; }
     input[type=number] { width:90px; padding:6px 4px; font-size:1em; border-radius:4px; border:1.5px solid #ffd700; background:#222; color:#ffd700; text-align:right; }
@@ -25,7 +25,7 @@
   </style>
 </head>
 <body>
-  <h2 class="center">룬/데카/캐쉬 계산기 (정적)</h2>
+  <h2 class="center">캐데비 계산기</h2>
   <div class="flex-col">
     <form id="mainForm" onsubmit="return false;">
       <table class="input-table">
@@ -67,8 +67,8 @@
       </table>
       <div class="center"><button type="button" onclick="calcAll()">계산</button></div>
     </form>
-    <div id="result"></div>
-    <div id="pkg_result"></div>
+    <div id="result" class="center"></div>
+    <div id="pkg_result" class="center"></div>
   </div>
   <script>
     const labels = ['룬 파편','엘리트 촉매','강화 촉매','룬 프리즘','보석 세공기','훈련 디스크'];
@@ -76,7 +76,7 @@
     function calc() {
       const vals = [];
       for(let i=0;i<6;i++) vals.push(Number(document.getElementById('d'+i).value));
-      let html = '<table><tr><th>물품</th><th>데카(구매)</th><th>데카(판매)</th><th>캐쉬가격</th><th>캐/데 비</th></tr>';
+      let html = '<table><tr><th>물품</th><th>데카(구매)</th><th>데카(판매)</th><th>캐쉬가격</th><th>캐데비</th></tr>';
       for(let i=0;i<6;i++) {
         const buy = vals[i];
         const sell = Math.round(buy*0.85*100)/100;
@@ -91,7 +91,7 @@
     function calcPkg() {
       const runeFrag = Number(document.getElementById('d0').value);
       const trainDisk = Number(document.getElementById('d5').value);
-      let html = '<table><tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th><th>데카가치</th><th>캐/데 비</th></tr>';
+      let html = '<table><tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th><th>데카가치</th><th>캐데비</th></tr>';
       for(let i=0;i<3;i++) {
         const name = ["월간각인","주간강화","봄맞이각인"][i];
         const cash = Number(document.getElementById('pkg_cash'+i).value);
