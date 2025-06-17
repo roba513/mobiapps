@@ -19,11 +19,41 @@
     <label>엘리트 촉매 <input type="number" id="d1" value="2904" required></label>
     <label>강화 촉매 <input type="number" id="d2" value="1681" required></label>
     <label>룬 프리즘 <input type="number" id="d3" value="244" required></label>
-    <label>보석 세공기 <input type="number" id="d4" value="500" required></label>
+    <label>보석 세공기 <input type="number" id="d5" value="500" required></label>
     <label>훈련 디스크 <input type="number" id="d5" value="2266" required></label>
     <button type="button" onclick="calc()">계산</button>
   </form>
   <div id="result"></div>
+  <hr style="margin:40px 0;">
+  <h3 class="center">패키지 계산</h3>
+  <form id="pkgForm" class="center" onsubmit="return false;">
+    <table style="margin:0 auto;">
+      <tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th></tr>
+      <tr>
+        <td>월간각인</td>
+        <td><input type="number" id="pkg_cash0" value="4900" readonly></td>
+        <td><input type="number" id="pkg_rune0" value="700"></td>
+        <td><input type="number" id="pkg_enh0" value="0"></td>
+        <td><input type="number" id="pkg_deka0" value="4900"></td>
+      </tr>
+      <tr>
+        <td>주간강화</td>
+        <td><input type="number" id="pkg_cash1" value="2900" readonly></td>
+        <td><input type="number" id="pkg_rune1" value="200"></td>
+        <td><input type="number" id="pkg_enh1" value="5"></td>
+        <td><input type="number" id="pkg_deka1" value="2900"></td>
+      </tr>
+      <tr>
+        <td>봄맞이각인</td>
+        <td><input type="number" id="pkg_cash2" value="3300" readonly></td>
+        <td><input type="number" id="pkg_rune2" value="600"></td>
+        <td><input type="number" id="pkg_enh2" value="3"></td>
+        <td><input type="number" id="pkg_deka2" value="0"></td>
+      </tr>
+    </table>
+    <button type="button" onclick="calcPkg()">패키지 계산</button>
+  </form>
+  <div id="pkg_result"></div>
   <script>
     const labels = ['룬 파편','엘리트 촉매','강화 촉매','룬 프리즘','보석 세공기','훈련 디스크'];
     const cashPrices = [null, 850, 250, 50, 100, 500];
@@ -42,7 +72,25 @@
       html += '</table>';
       document.getElementById('result').innerHTML = html;
     }
-    window.onload = calc;
+    function calcPkg() {
+      const runeFrag = Number(document.getElementById('d0').value);
+      let html = '<table><tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th><th>데카가치</th><th>캐/데 비</th></tr>';
+      for(let i=0;i<3;i++) {
+        const name = ["월간각인","주간강화","봄맞이각인"][i];
+        const cash = Number(document.getElementById('pkg_cash'+i).value);
+        const rune = Number(document.getElementById('pkg_rune'+i).value);
+        const enh = Number(document.getElementById('pkg_enh'+i).value);
+        const deka = Number(document.getElementById('pkg_deka'+i).value);
+        // 데카가치 = 데카 + 강화*룬파편/10
+        const dekaValue = deka + enh * runeFrag / 10;
+        // 캐/데 비 = 캐쉬 / 데카가치
+        const ratio = dekaValue ? (cash / dekaValue).toFixed(4) : '-';
+        html += `<tr><td>${name}</td><td>${cash}</td><td>${rune}</td><td>${enh}</td><td>${deka}</td><td>${dekaValue.toFixed(2)}</td><td>${ratio}</td></tr>`;
+      }
+      html += '</table>';
+      document.getElementById('pkg_result').innerHTML = html;
+    }
+    window.onload = function() { calc(); calcPkg(); };
   </script>
 </body>
 </html> 
