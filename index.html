@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <title>룬 계산기 (정적)</title>
+  <title>룬/데카/캐쉬 계산기 (정적)</title>
   <style>
     body { background:#222; color:#eee; font-family:sans-serif; }
     table { border-collapse:collapse; margin:20px 0; background:#fff; color:#222; }
@@ -10,24 +10,29 @@
     th { background:#eee; }
     input[type=number] { width:80px; }
     .center { text-align:center; }
+    .input-table input[type=number] { background:#222; color:#ffd700; border:1px solid #ffd700; text-align:right; }
+    .input-table th { background:#222; color:#ffd700; }
+    .input-table td { background:#222; color:#ffd700; }
   </style>
 </head>
 <body>
   <h2 class="center">룬/데카/캐쉬 계산기 (정적)</h2>
-  <form id="calcForm" class="center" onsubmit="return false;">
-    <label>룬 파편 <input type="number" id="d0" value="123" required></label>
-    <label>엘리트 촉매 <input type="number" id="d1" value="2904" required></label>
-    <label>강화 촉매 <input type="number" id="d2" value="1681" required></label>
-    <label>룬 프리즘 <input type="number" id="d3" value="244" required></label>
-    <label>보석 세공기 <input type="number" id="d5" value="500" required></label>
-    <label>훈련 디스크 <input type="number" id="d5" value="2266" required></label>
-    <button type="button" onclick="calc()">계산</button>
-  </form>
-  <div id="result"></div>
-  <hr style="margin:40px 0;">
-  <h3 class="center">패키지 계산</h3>
-  <form id="pkgForm" class="center" onsubmit="return false;">
-    <table style="margin:0 auto;">
+  <form id="mainForm" class="center" onsubmit="return false;">
+    <table class="input-table" style="margin:0 auto;">
+      <tr>
+        <th>룬 파편</th><th>엘리트 촉매</th><th>강화 촉매</th><th>룬 프리즘</th><th>보석 세공기</th><th>훈련 디스크</th>
+      </tr>
+      <tr>
+        <td><input type="number" id="d0" value="123" required></td>
+        <td><input type="number" id="d1" value="2904" required></td>
+        <td><input type="number" id="d2" value="1681" required></td>
+        <td><input type="number" id="d3" value="244" required></td>
+        <td><input type="number" id="d4" value="500" required></td>
+        <td><input type="number" id="d5" value="2266" required></td>
+      </tr>
+    </table>
+    <br>
+    <table class="input-table" style="margin:0 auto;">
       <tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th></tr>
       <tr>
         <td>월간각인</td>
@@ -51,8 +56,9 @@
         <td><input type="number" id="pkg_deka2" value="0"></td>
       </tr>
     </table>
-    <button type="button" onclick="calcPkg()">패키지 계산</button>
+    <button type="button" onclick="calcAll()">계산</button>
   </form>
+  <div id="result"></div>
   <div id="pkg_result"></div>
   <script>
     const labels = ['룬 파편','엘리트 촉매','강화 촉매','룬 프리즘','보석 세공기','훈련 디스크'];
@@ -66,7 +72,7 @@
         const sell = Math.round(buy*0.85*100)/100;
         const cash = cashPrices[i]!==null ? cashPrices[i] : '-';
         let ratio = '-';
-        if(typeof cash==="number" && cash) ratio = (sell/cash).toFixed(4);
+        if(typeof cash==="number" && cash) ratio = (sell/cash).toFixed(1);
         html += `<tr><td>${labels[i]}</td><td>${buy}</td><td>${sell}</td><td>${cash}</td><td>${ratio}</td></tr>`;
       }
       html += '</table>';
@@ -74,6 +80,7 @@
     }
     function calcPkg() {
       const runeFrag = Number(document.getElementById('d0').value);
+      const trainDisk = Number(document.getElementById('d5').value);
       let html = '<table><tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th><th>데카가치</th><th>캐/데 비</th></tr>';
       for(let i=0;i<3;i++) {
         const name = ["월간각인","주간강화","봄맞이각인"][i];
@@ -81,16 +88,17 @@
         const rune = Number(document.getElementById('pkg_rune'+i).value);
         const enh = Number(document.getElementById('pkg_enh'+i).value);
         const deka = Number(document.getElementById('pkg_deka'+i).value);
-        // 데카가치 = 데카 + 강화*룬파편/10
-        const dekaValue = deka + enh * runeFrag / 10;
-        // 캐/데 비 = 캐쉬 / 데카가치
-        const ratio = dekaValue ? (cash / dekaValue).toFixed(4) : '-';
+        // 데카가치 = 데카 + (룬 × 룬파편/10) + (강화 × 훈련디스크)
+        const dekaValue = deka + rune * runeFrag / 10 + enh * trainDisk;
+        // 캐/데 비 = 데카가치 / 캐쉬
+        const ratio = cash ? (dekaValue / cash).toFixed(1) : '-';
         html += `<tr><td>${name}</td><td>${cash}</td><td>${rune}</td><td>${enh}</td><td>${deka}</td><td>${dekaValue.toFixed(2)}</td><td>${ratio}</td></tr>`;
       }
       html += '</table>';
       document.getElementById('pkg_result').innerHTML = html;
     }
-    window.onload = function() { calc(); calcPkg(); };
+    function calcAll() { calc(); calcPkg(); }
+    window.onload = calcAll;
   </script>
 </body>
 </html> 
