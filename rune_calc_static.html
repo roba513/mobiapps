@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>룬 계산기 (정적)</title>
+  <style>
+    body { background:#222; color:#eee; font-family:sans-serif; }
+    table { border-collapse:collapse; margin:20px 0; background:#fff; color:#222; }
+    th,td { border:1px solid #aaa; padding:6px 12px; text-align:center; }
+    th { background:#eee; }
+    input[type=number] { width:80px; }
+    .center { text-align:center; }
+  </style>
+</head>
+<body>
+  <h2 class="center">룬/데카/캐쉬 계산기 (정적)</h2>
+  <form id="calcForm" class="center" onsubmit="return false;">
+    <label>룬 파편 <input type="number" id="d0" value="123" required></label>
+    <label>엘리트 촉매 <input type="number" id="d1" value="2904" required></label>
+    <label>강화 촉매 <input type="number" id="d2" value="1681" required></label>
+    <label>룬 프리즘 <input type="number" id="d3" value="244" required></label>
+    <label>보석 세공기 <input type="number" id="d4" value="500" required></label>
+    <label>훈련 디스크 <input type="number" id="d5" value="2266" required></label>
+    <button type="button" onclick="calc()">계산</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    const labels = ['룬 파편','엘리트 촉매','강화 촉매','룬 프리즘','보석 세공기','훈련 디스크'];
+    const cashPrices = [null, 850, 250, 50, 100, 500];
+    function calc() {
+      const vals = [];
+      for(let i=0;i<6;i++) vals.push(Number(document.getElementById('d'+i).value));
+      let html = '<table><tr><th>물품</th><th>데카(구매)</th><th>데카(판매)</th><th>캐쉬가격</th><th>캐/데 비</th></tr>';
+      for(let i=0;i<6;i++) {
+        const buy = vals[i];
+        const sell = Math.round(buy*0.85*100)/100;
+        const cash = cashPrices[i]!==null ? cashPrices[i] : '-';
+        let ratio = '-';
+        if(typeof cash==="number" && cash) ratio = (sell/cash).toFixed(4);
+        html += `<tr><td>${labels[i]}</td><td>${buy}</td><td>${sell}</td><td>${cash}</td><td>${ratio}</td></tr>`;
+      }
+      html += '</table>';
+      document.getElementById('result').innerHTML = html;
+    }
+    window.onload = calc;
+  </script>
+</body>
+</html> 
