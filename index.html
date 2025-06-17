@@ -27,6 +27,7 @@
 <body>
   <h2 class="center">캐데비 계산기</h2>
   <div class="flex-col">
+    <div id="top_kedebi" class="center"></div>
     <form id="mainForm" onsubmit="return false;">
       <table class="input-table">
         <tr>
@@ -73,41 +74,86 @@
   <script>
     const labels = ['룬 파편','엘리트 촉매','강화 촉매','룬 프리즘','보석 세공기','훈련 디스크'];
     const cashPrices = [null, 850, 250, 50, 100, 500];
-    function calc() {
+    function getKedebiColor(val, min, max) {
+      if(isNaN(val)) return '';
+      const t = (val - min) / (max - min + 0.0001);
+      // t=1(최고) 파랑, t=0(최저) 빨강
+      const r = Math.round(255 * (1-t));
+      const g = Math.round(180 + 40 * t); // 중간값 밝게
+      const b = Math.round(255 * t);
+      return `background:rgb(${r},${g},${b});color:#222;font-weight:bold;`;
+    }
+    function calcAll() {
+      // 1. 단일품목 케데비 계산 및 값 수집
       const vals = [];
       for(let i=0;i<6;i++) vals.push(Number(document.getElementById('d'+i).value));
-      let html = '<table><tr><th>물품</th><th>데카(구매)</th><th>데카(판매)</th><th>캐쉬가격</th><th>캐데비</th></tr>';
+      let kedebiArr = [];
+      let html1 = '<table><tr><th>물품</th><th>데카(구매)</th><th>데카(판매)</th><th>캐쉬가격</th><th>케데비</th></tr>';
       for(let i=0;i<6;i++) {
         const buy = vals[i];
         const sell = Math.round(buy*0.85*100)/100;
         const cash = cashPrices[i]!==null ? cashPrices[i] : '-';
         let ratio = '-';
-        if(typeof cash==="number" && cash) ratio = (sell/cash).toFixed(1);
-        html += `<tr><td>${labels[i]}</td><td>${buy}</td><td>${sell}</td><td>${cash}</td><td>${ratio}</td></tr>`;
+        if(typeof cash==="number" && cash) {
+          ratio = (sell/cash).toFixed(1);
+          kedebiArr.push(parseFloat(ratio));
+        }
+        html1 += `<tr><td>${labels[i]}</td><td>${buy}</td><td>${sell}</td><td>${cash}</td>`;
+        if(typeof cash==="number" && cash) {
+          html1 += `<td id="kedebi_item_${i}">${ratio}</td>`;
+        } else {
+          html1 += `<td>${ratio}</td>`;
+        }
+        html1 += `</tr>`;
       }
-      html += '</table>';
-      document.getElementById('result').innerHTML = html;
-    }
-    function calcPkg() {
+      html1 += '</table>';
+      document.getElementById('result').innerHTML = html1;
+
+      // 2. 패키지 케데비 계산 및 값 수집
       const runeFrag = Number(document.getElementById('d0').value);
       const trainDisk = Number(document.getElementById('d5').value);
-      let html = '<table><tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th><th>데카가치</th><th>캐데비</th></tr>';
+      let html2 = '<table><tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th><th>데카가치</th><th>케데비</th></tr>';
       for(let i=0;i<3;i++) {
         const name = ["월간각인","주간강화","봄맞이각인"][i];
         const cash = Number(document.getElementById('pkg_cash'+i).value);
         const rune = Number(document.getElementById('pkg_rune'+i).value);
         const enh = Number(document.getElementById('pkg_enh'+i).value);
         const deka = Number(document.getElementById('pkg_deka'+i).value);
-        // 데카가치 = 데카 + (룬 × 룬파편/10) + (강화 × 훈련디스크)
         const dekaValue = deka + rune * runeFrag / 10 + enh * trainDisk;
-        // 캐/데 비 = 데카가치 / 캐쉬
         const ratio = cash ? (dekaValue / cash).toFixed(1) : '-';
-        html += `<tr><td>${name}</td><td>${cash}</td><td>${rune}</td><td>${enh}</td><td>${deka}</td><td>${dekaValue.toFixed(2)}</td><td>${ratio}</td></tr>`;
+        if (cash && dekaValue) {
+          kedebiArr.push(parseFloat(ratio));
+        }
+        html2 += `<tr><td>${name}</td><td>${cash}</td><td>${rune}</td><td>${enh}</td><td>${deka}</td><td>${dekaValue.toFixed(2)}</td>`;
+        if (cash && dekaValue) {
+          html2 += `<td id="kedebi_pkg_${i}">${ratio}</td>`;
+        } else {
+          html2 += `<td>${ratio}</td>`;
+        }
+        html2 += `</tr>`;
       }
-      html += '</table>';
-      document.getElementById('pkg_result').innerHTML = html;
+      html2 += '</table>';
+      document.getElementById('pkg_result').innerHTML = html2;
+
+      // 3. 전체 케데비 min/max로 색상 적용 (두 표 모두)
+      if(kedebiArr.length>0) {
+        const min = Math.min(...kedebiArr), max = Math.max(...kedebiArr);
+        for(let i=0;i<6;i++) {
+          const el = document.getElementById('kedebi_item_'+i);
+          if(el) {
+            const val = parseFloat(el.innerText);
+            el.setAttribute('style', getKedebiColor(val, min, max));
+          }
+        }
+        for(let i=0;i<3;i++) {
+          const el = document.getElementById('kedebi_pkg_'+i);
+          if(el) {
+            const val = parseFloat(el.innerText);
+            el.setAttribute('style', getKedebiColor(val, min, max));
+          }
+        }
+      }
     }
-    function calcAll() { calc(); calcPkg(); }
     window.onload = calcAll;
   </script>
 </body>
