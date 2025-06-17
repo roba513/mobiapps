@@ -179,10 +179,12 @@
     function getKedebiColor(val, min, max) {
       if(isNaN(val)) return '';
       const t = (val - min) / (max - min + 0.0001);
-      const r = Math.round(255 * (1-t));
-      const g = Math.round(180 + 40 * t);
-      const b = Math.round(255 * t);
-      return `background:linear-gradient(90deg,rgba(${r},${g},${b},0.18),rgba(${r},${g},${b},0.38));color:#232526;font-weight:900;border-radius:8px;`;
+      // t=1(최고) 진한 파랑, t=0(최저) 진한 빨강
+      // 파랑: #0050ff (0,80,255), 빨강: #e53935 (229,57,53)
+      const r = Math.round(229 * (1-t) + 0 * t);
+      const g = Math.round(57 * (1-t) + 80 * t);
+      const b = Math.round(53 * (1-t) + 255 * t);
+      return `background:linear-gradient(90deg,rgba(${r},${g},${b},0.92),rgba(${r},${g},${b},0.82));color:#fff;font-weight:900;border-radius:8px;`;
     }
     function calcAll() {
       // 1. 단일품목 케데비 계산 및 값 수집
