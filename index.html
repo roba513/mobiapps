@@ -2,74 +2,176 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <title>룬/데카/캐쉬 계산기 (정적)</title>
+  <title>캐데비 계산기</title>
   <style>
-    body { background:#222; color:#eee; font-family:sans-serif; }
-    h2 { margin-top:32px; }
-    .center { text-align:center; }
-    .flex-col { display:flex; flex-direction:column; align-items:center; }
-    .flex-row { display:flex; flex-direction:row; justify-content:center; gap:16px; }
-    table { border-collapse:collapse; margin:24px 0; background:#fff; color:#222; font-size:1.15em; min-width:520px; box-shadow:0 2px 16px #0004; margin-left:auto; margin-right:auto; }
-    th,td { border:1.5px solid #aaa; padding:10px 18px; text-align:center; }
-    th { background:#222; color:#ffd700; font-size:1.08em; }
-    input[type=number] { width:90px; padding:6px 4px; font-size:1em; border-radius:4px; border:1.5px solid #ffd700; background:#222; color:#ffd700; text-align:right; }
-    input[readonly] { background:#333; color:#ffd700; }
-    button { font-size:1.1em; padding:7px 22px; margin:18px 0 0 0; background:#ffd700; color:#222; border:none; border-radius:5px; cursor:pointer; font-weight:bold; transition:background 0.2s; }
-    button:hover { background:#ffe066; }
-    .input-table { margin-bottom:0; }
-    @media (max-width:700px) {
-      table { min-width:320px; font-size:0.98em; }
-      th,td { padding:6px 4px; }
-      input[type=number] { width:60px; font-size:0.95em; }
+    body {
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+      color: #f5f6fa;
+      font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    h2 {
+      margin-top: 40px;
+      font-size: 2.2em;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-align: center;
+      color: #ffd700;
+      text-shadow: 0 2px 16px #0008;
+    }
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .card {
+      background: rgba(34, 40, 49, 0.98);
+      border-radius: 22px;
+      box-shadow: 0 4px 32px #0005, 0 1.5px 0 #ffd70033;
+      padding: 32px 32px 24px 32px;
+      margin: 32px 0 0 0;
+      max-width: 900px;
+      width: 95vw;
+      transition: box-shadow 0.2s;
+    }
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 24px 0;
+      background: #23272f;
+      color: #f5f6fa;
+      font-size: 1.13em;
+      min-width: 520px;
+      box-shadow: 0 2px 16px #0002;
+      border-radius: 16px;
+      overflow: hidden;
+      width: 100%;
+    }
+    th,td {
+      border: none;
+      padding: 14px 18px;
+      text-align: center;
+    }
+    th {
+      background: #23272f;
+      color: #ffd700;
+      font-size: 1.08em;
+      font-weight: 700;
+      border-bottom: 2.5px solid #ffd70044;
+      letter-spacing: 0.5px;
+    }
+    tr:not(:last-child) td {
+      border-bottom: 1.5px solid #393e46;
+    }
+    input[type=number] {
+      width: 100%;
+      min-width: 70px;
+      max-width: 120px;
+      padding: 10px 8px;
+      font-size: 1.08em;
+      border-radius: 10px;
+      border: 1.5px solid #ffd70099;
+      background: #181b20;
+      color: #ffd700;
+      text-align: right;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 6px #0002 inset;
+    }
+    input[type=number]:focus {
+      border: 2px solid #ffd700;
+      background: #23272f;
+      color: #fffbe7;
+    }
+    input[readonly] {
+      background: #23272f;
+      color: #ffd700bb;
+      font-weight: 600;
+    }
+    button {
+      font-size: 1.18em;
+      padding: 13px 38px;
+      margin: 28px 0 0 0;
+      background: linear-gradient(90deg, #ffd700 60%, #ffe066 100%);
+      color: #232526;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      box-shadow: 0 2px 12px #ffd70033;
+      letter-spacing: 1px;
+      transition: background 0.18s, box-shadow 0.18s, color 0.18s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #ffe066 60%, #ffd700 100%);
+      color: #181b20;
+      box-shadow: 0 4px 24px #ffd70055;
+    }
+    .center { text-align: center; }
+    @media (max-width: 900px) {
+      .card { padding: 18px 2vw 12px 2vw; }
+      table { min-width: 320px; font-size: 0.98em; }
+      th,td { padding: 8px 4px; }
+      input[type=number] { min-width: 48px; font-size: 0.98em; }
+    }
+    @media (max-width: 600px) {
+      h2 { font-size: 1.2em; }
+      .card { padding: 8px 0 8px 0; }
+      table { font-size: 0.93em; }
     }
   </style>
 </head>
 <body>
-  <h2 class="center">캐데비 계산기</h2>
+  <h2>캐데비 계산기</h2>
   <div class="flex-col">
-    <div id="top_kedebi" class="center"></div>
-    <form id="mainForm" onsubmit="return false;">
-      <table class="input-table">
-        <tr>
-          <th>룬 파편</th><th>엘리트 촉매</th><th>강화 촉매</th><th>룬 프리즘</th><th>보석 세공기</th><th>훈련 디스크</th>
-        </tr>
-        <tr>
-          <td><input type="number" id="d0" value="123" required></td>
-          <td><input type="number" id="d1" value="2904" required></td>
-          <td><input type="number" id="d2" value="1681" required></td>
-          <td><input type="number" id="d3" value="244" required></td>
-          <td><input type="number" id="d4" value="500" required></td>
-          <td><input type="number" id="d5" value="2266" required></td>
-        </tr>
-      </table>
-      <table class="input-table">
-        <tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th></tr>
-        <tr>
-          <td>월간각인</td>
-          <td><input type="number" id="pkg_cash0" value="4900" readonly></td>
-          <td><input type="number" id="pkg_rune0" value="700"></td>
-          <td><input type="number" id="pkg_enh0" value="0"></td>
-          <td><input type="number" id="pkg_deka0" value="4900"></td>
-        </tr>
-        <tr>
-          <td>주간강화</td>
-          <td><input type="number" id="pkg_cash1" value="2900" readonly></td>
-          <td><input type="number" id="pkg_rune1" value="200"></td>
-          <td><input type="number" id="pkg_enh1" value="5"></td>
-          <td><input type="number" id="pkg_deka1" value="2900"></td>
-        </tr>
-        <tr>
-          <td>봄맞이각인</td>
-          <td><input type="number" id="pkg_cash2" value="3300" readonly></td>
-          <td><input type="number" id="pkg_rune2" value="600"></td>
-          <td><input type="number" id="pkg_enh2" value="3"></td>
-          <td><input type="number" id="pkg_deka2" value="0"></td>
-        </tr>
-      </table>
-      <div class="center"><button type="button" onclick="calcAll()">계산</button></div>
-    </form>
-    <div id="result" class="center"></div>
-    <div id="pkg_result" class="center"></div>
+    <div class="card">
+      <form id="mainForm" onsubmit="return false;">
+        <table class="input-table">
+          <tr>
+            <th>룬 파편</th><th>엘리트 촉매</th><th>강화 촉매</th><th>룬 프리즘</th><th>보석 세공기</th><th>훈련 디스크</th>
+          </tr>
+          <tr>
+            <td><input type="number" id="d0" value="123" required></td>
+            <td><input type="number" id="d1" value="2904" required></td>
+            <td><input type="number" id="d2" value="1681" required></td>
+            <td><input type="number" id="d3" value="244" required></td>
+            <td><input type="number" id="d4" value="500" required></td>
+            <td><input type="number" id="d5" value="2266" required></td>
+          </tr>
+        </table>
+        <table class="input-table">
+          <tr><th>패키지</th><th>캐쉬</th><th>룬</th><th>강화</th><th>데카</th></tr>
+          <tr>
+            <td>월간각인</td>
+            <td><input type="number" id="pkg_cash0" value="4900" readonly></td>
+            <td><input type="number" id="pkg_rune0" value="700"></td>
+            <td><input type="number" id="pkg_enh0" value="0"></td>
+            <td><input type="number" id="pkg_deka0" value="4900"></td>
+          </tr>
+          <tr>
+            <td>주간강화</td>
+            <td><input type="number" id="pkg_cash1" value="2900" readonly></td>
+            <td><input type="number" id="pkg_rune1" value="200"></td>
+            <td><input type="number" id="pkg_enh1" value="5"></td>
+            <td><input type="number" id="pkg_deka1" value="2900"></td>
+          </tr>
+          <tr>
+            <td>봄맞이각인</td>
+            <td><input type="number" id="pkg_cash2" value="3300" readonly></td>
+            <td><input type="number" id="pkg_rune2" value="600"></td>
+            <td><input type="number" id="pkg_enh2" value="3"></td>
+            <td><input type="number" id="pkg_deka2" value="0"></td>
+          </tr>
+        </table>
+        <div class="center"><button type="button" onclick="calcAll()">계산</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <div id="result" class="center"></div>
+      <div id="pkg_result" class="center"></div>
+    </div>
   </div>
   <script>
     const labels = ['룬 파편','엘리트 촉매','강화 촉매','룬 프리즘','보석 세공기','훈련 디스크'];
@@ -77,11 +179,10 @@
     function getKedebiColor(val, min, max) {
       if(isNaN(val)) return '';
       const t = (val - min) / (max - min + 0.0001);
-      // t=1(최고) 파랑, t=0(최저) 빨강
       const r = Math.round(255 * (1-t));
-      const g = Math.round(180 + 40 * t); // 중간값 밝게
+      const g = Math.round(180 + 40 * t);
       const b = Math.round(255 * t);
-      return `background:rgb(${r},${g},${b});color:#222;font-weight:bold;`;
+      return `background:linear-gradient(90deg,rgba(${r},${g},${b},0.18),rgba(${r},${g},${b},0.38));color:#232526;font-weight:900;border-radius:8px;`;
     }
     function calcAll() {
       // 1. 단일품목 케데비 계산 및 값 수집
